@@ -243,7 +243,7 @@
 .details-nav {
   display: flex; 
   list-style: none; 
-  color: white; 
+  color: rgba(176, 176, 176, 0.501);
   gap: 3rem; 
   padding: 0rem 2rem 0rem;
 }
@@ -253,6 +253,10 @@
   cursor: pointer;
   font-weight: 500;
   letter-spacing: .2rem;
+}
+
+.nav-active {
+  color: white;
 }
 
 .weather-label {
@@ -380,6 +384,10 @@ rect {
   }
 }
 
+.active {
+  
+}
+
 @media (max-width: 800px) {
   .home-weather-section {
     gap: 80rem;
@@ -439,7 +447,10 @@ rect {
   }
 
   .details-nav {
-    display: none;
+    /* display: none; */
+    margin-top: 2rem;
+    padding: 1rem;
+    gap: 1.5rem;
   }
 
 }

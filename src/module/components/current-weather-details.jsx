@@ -10,6 +10,7 @@ import LoadingSpinner from './loading-spinner'
 
 const CurrentWeatherDetails = (props) => {
 
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const [dayData, setDayData] = useState({
         day: '',
         list: [],
@@ -92,7 +93,8 @@ const CurrentWeatherDetails = (props) => {
     const renderWeatherDaySelectionCards = (list, day) => {
         const renderweatherDaySelectionUI = () => {
             return (
-                <div  style={{ color: "white", fontSize: "2rem", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "1rem", cursor: "pointer" }} onClick={() => {
+                <div style={{ color: "white", fontSize: "2rem", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "1rem", cursor: "pointer" }} onClick={() => {
+
                     getDayDataForGivenDay(list, day);
                 }}>
                     <div style={{ fontSize: "2rem" }}>{day.slice(0, 3)}</div>
@@ -109,7 +111,7 @@ const CurrentWeatherDetails = (props) => {
                 borderRadius: "1rem",
                 display: "flex",
                 justifyContent: "center",
-                backgroundColor: "rgba(255, 255, 255, .03)",
+                backgroundColor: !_.isEmpty(dayData.currentData) && days[(new Date(dayData.currentData.dt * 1000)).getDay()] === day ? "rgba(255, 255, 255, .2)": "rgba(255, 255, 255, .03)",
             }
         }
         return (
@@ -141,9 +143,9 @@ const CurrentWeatherDetails = (props) => {
                 </div>
             </div>
             <ul className='details-nav'>
-                <li onClick={() => { setWhichMap("TEMP"); }}>Temperature</li>
-                <li onClick={() => { setWhichMap("HUMIDITY"); }}>Humidity</li>
-                <li onClick={() => { setWhichMap("WIND"); }}>Wind</li>
+                <li className={whichMap==="TEMP"? 'nav-active': ''} onClick={() => { setWhichMap("TEMP"); }}>Temperature</li>
+                <li className={whichMap==="HUMIDITY"? 'nav-active': ''} onClick={() => { setWhichMap("HUMIDITY"); }}>Humidity</li>
+                <li className={whichMap==="WIND"? 'nav-active': ''} onClick={() => { setWhichMap("WIND"); }}>Wind</li>
             </ul>
             <div style={{ color: "white", height: "24rem" }}>
                 <DisplayCard renderData={lineGraphRenderData} />
@@ -151,8 +153,8 @@ const CurrentWeatherDetails = (props) => {
             <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", width: "100%", flexWrap: "wrap", alignContent: "space-between" }}>
                 {
                     !_.isEmpty(props.forcast) ?
-                        Object.keys(props.forcast.list).map(e => {
-                            return renderWeatherDaySelectionCards(props.forcast.list[e], e)
+                        Object.keys(props.forcast.list).map((e, i) => {
+                            return renderWeatherDaySelectionCards(props.forcast.list[e], e, i)
                         })
                         : null
                 }
