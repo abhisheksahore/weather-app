@@ -1,24 +1,22 @@
-import logo from './logo.svg';
+import { Provider } from 'react-redux';
 import './App.css';
+import Cloud from './module/components/art/cloud';
+import Moon from './module/components/art/moon';
+import Sun from './module/components/art/sun';
+import DisplayCard from './module/components/displayCard';
+import HomeScreen from './module/components/homeScreen';
+import store from './module/redux/store';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      <div>
+        <HomeScreen />
+        {/* <Sun />
+        <Moon />
+        <Cloud /> */}
+      </div>
+    </Provider>
   );
 }
 
