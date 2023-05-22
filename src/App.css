@@ -396,7 +396,7 @@ rect {
 
 @media (max-width: 500px) {
   .home-weather-section {
-    gap: 100rem;
+    gap: 110rem;
   }
   .display-time {
     display: none;
