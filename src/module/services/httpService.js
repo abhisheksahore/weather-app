@@ -10,7 +10,6 @@ export default class HttpService {
             params: params,
             method: "GET",
         }
-        console.log(options);
         return axios.get(url, options);
     }
 

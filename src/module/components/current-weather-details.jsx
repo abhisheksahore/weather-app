@@ -19,6 +19,7 @@ const CurrentWeatherDetails = (props) => {
     const [whichMap, setWhichMap] = useState('TEMP');
     const [weatherPlotData, setWeatherPlotData] = useState([]);
 
+
     const filterDataForGraph = () => {
         const mapData = dayData.list.map(e => {
             return [
@@ -28,8 +29,6 @@ const CurrentWeatherDetails = (props) => {
         })
         return mapData;
     }
-
-
 
     useEffect(() => {
         console.log(1)
@@ -55,26 +54,28 @@ const CurrentWeatherDetails = (props) => {
         }
     }, [dayData.list])
 
+    const getDayDataForGivenDay = (list, day) => {
+        const currentDayTimeData = list.reduce((a, e) => {
+            if (e.dt * 1000 < Date.now()) {
+                a.push(e);
+            }
+            return a
+        }, [])
+        setDayData({
+            day,
+            list,
+            currentDay: day === new Date(Date.now()).getDay() ? true : false,
+            currentData: currentDayTimeData.length === 0 ? list[0] : currentDayTimeData[0],
+        })
+    }
 
     useEffect(() => {
         console.log(4);
         if (!_.isEmpty(props.forcast)) {
             Object.keys(props.forcast.list).forEach((e, i) => {
                 if (i === 0) {
-                    const currentDayTimeData = props.forcast.list[e].reduce((a, el) => {
-                        if (el.dt * 1000 < Date.now()) {
-                            a.push(el);
-                        }
-                        return a
-                    }, [])
-                    console.log(currentDayTimeData);
-                    setDayData({
-                        day: e,
-                        list: props.forcast.list[e],
-                        currentDay: e === new Date(Date.now()).getDay() ? true : false,
-                        currentData: currentDayTimeData.length === 0 ? props.forcast.list[e][0] : currentDayTimeData[0],
-                    })
-                }
+                    getDayDataForGivenDay(props.forcast.list[e], e);
+                }   
             })
         }
     }, [props.forcast])
@@ -92,22 +93,7 @@ const CurrentWeatherDetails = (props) => {
         const renderweatherDaySelectionUI = () => {
             return (
                 <div  style={{ color: "white", fontSize: "2rem", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "1rem", cursor: "pointer" }} onClick={() => {
-                    const currentDayTimeData = list.reduce((a, e) => {
-                        console.log(e.dt * 1000 < Date.now());
-                        console.log(e.dt * 1000);
-                        console.log(Date.now());
-                        if (e.dt * 1000 < Date.now()) {
-                            a.push(e);
-                        }
-                        return a
-                    }, [])
-                    console.log(currentDayTimeData);
-                    setDayData({
-                        day,
-                        list,
-                        currentDay: day === new Date(Date.now()).getDay() ? true : false,
-                        currentData: currentDayTimeData.length === 0 ? list[0] : currentDayTimeData[0],
-                    })
+                    getDayDataForGivenDay(list, day);
                 }}>
                     <div style={{ fontSize: "2rem" }}>{day.slice(0, 3)}</div>
                     <FontAwesomeIcon style={{ fontSize: "4rem" }} icon={faCloud} />

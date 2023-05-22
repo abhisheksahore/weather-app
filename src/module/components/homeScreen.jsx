@@ -20,36 +20,38 @@ const HomeScreen = (props) => {
 
     const [locationError, setLocationError] = useState(false);
     const [errorResp, setErrorResp] = useState(false);
+
+    const fetchDataFromAPI = (cw, fc) => {
+        HttpService.getCurrentWeather(cw).then(data => {
+            data.data = changeTempUnit(convertKToC, data.data);
+            props.setCurrentWeather(data.data);
+        }).catch(error => {
+            setErrorResp(true);
+        })
+        HttpService.getCurrentWeather(fc).then(data => {
+            data.data = changeTempUnit(convertKToC, data.data);
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            data.data.list = data.data.list.reduce((a, e) => {
+                const day = days[new Date(e.dt * 1000).getDay()];
+                if (_.isEmpty(a[day])) {
+                    a[day] = [];
+                    a[day].push(e);
+                } else {
+                    a[day].push(e);
+                }
+                return a;
+            }, {})
+            props.setForcast(data.data);
+        }).catch(error => {
+            setErrorResp(true);
+        })
+    }
+
     useEffect(() => {
         console.log(location);
         if (location.loaded === true && location.coordinates.lat !== "" && location.coordinates.lat !== undefined && location.coordinates.lat !== null) {
             console.log(location);
-            HttpService.getCurrentWeather(`https://api.openweathermap.org/data/2.5/weather?lat=${location.coordinates.lat}&lon=${location.coordinates.lng}&appid=${API_KEY}`).then(data => {
-                data.data = changeTempUnit(convertKToC, data.data);
-                console.log(data);
-                props.setCurrentWeather(data.data);
-            }).catch(error => {
-                setErrorResp(true);
-            })
-            HttpService.getCurrentWeather(`https://api.openweathermap.org/data/2.5/forecast?lat=${location.coordinates.lat}&lon=${location.coordinates.lng}&appid=${API_KEY}`).then(data => {
-                data.data = changeTempUnit(convertKToC, data.data);
-                console.log(data);
-                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                data.data.list = data.data.list.reduce((a, e) => {
-                    const day = days[new Date(e.dt * 1000).getDay()];
-                    if (_.isEmpty(a[day])) {
-                        a[day] = [];
-                        a[day].push(e);
-                    } else {
-                        a[day].push(e);
-                    }
-                    return a;
-                }, {})
-                console.log(data.data);
-                props.setForcast(data.data);
-            }).catch(error => {
-                setErrorResp(true);
-            })
+            fetchDataFromAPI(`https://api.openweathermap.org/data/2.5/weather?lat=${location.coordinates.lat}&lon=${location.coordinates.lng}&appid=${API_KEY}`, `https://api.openweathermap.org/data/2.5/forecast?lat=${location.coordinates.lat}&lon=${location.coordinates.lng}&appid=${API_KEY}`);
         } else if (location.loaded === true && location.coordinates.lat === "") {
             console.log(location);
             setLocationError(true);
@@ -60,41 +62,7 @@ const HomeScreen = (props) => {
     const submitCity = (value) => {
 
         try {
-            HttpService.getCurrentWeather(`https://api.openweathermap.org/data/2.5/weather?q=${value}&appid=${API_KEY}`).then(data => {
-                data.data.main.temp = convertKToC(data.data.main.temp);
-                data.data.main.temp_max = convertKToC(data.data.main.temp_max);
-                data.data.main.temp_min = convertKToC(data.data.main.temp_min);
-                data.data.main.feels_like = convertKToC(data.data.main.feels_like);
-                props.setCurrentWeather(data.data);
-            }).catch(error => {
-                console.log(error);
-                setErrorResp(true);
-            })
-            HttpService.getCurrentWeather(`https://api.openweathermap.org/data/2.5/forecast?q=${value}&appid=${API_KEY}`).then(data => {
-                data.data.list = data.data.list.map(e => {
-                    e.main.temp = convertKToC(e.main.temp);
-                    e.main.temp_max = convertKToC(e.main.temp_max);
-                    e.main.temp_min = convertKToC(e.main.temp_min);
-                    e.main.feels_like = convertKToC(e.main.feels_like);
-                    return e;
-                })
-                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                data.data.list = data.data.list.reduce((a, e) => {
-                    const day = days[new Date(e.dt * 1000).getDay()];
-                    if (_.isEmpty(a[day])) {
-                        a[day] = [];
-                        a[day].push(e);
-                    } else {
-                        a[day].push(e);
-                    }
-                    return a;
-                }, {})
-                console.log(data.data);
-                props.setForcast(data.data);
-            }).catch(error => {
-                console.log(error);
-                setErrorResp(true);
-            })
+            fetchDataFromAPI(`https://api.openweathermap.org/data/2.5/weather?q=${value}&appid=${API_KEY}`, `https://api.openweathermap.org/data/2.5/forecast?q=${value}&appid=${API_KEY}`)
         } catch (error) {
             console.log(error);
         }
@@ -128,7 +96,6 @@ const HomeScreen = (props) => {
         setLocationError(false);
         const timeoutID = setTimeout(() => {
             console.log(location)
-
             if (location.loaded === true && location.coordinates.lat === "") {
                 setLocationError(true);
                 console.log("clicked")
@@ -179,14 +146,14 @@ const HomeScreen = (props) => {
                 </div>
             </div>
             {
-                locationError ? 
+                locationError ?
                     prompt("Please! Provide the location access from Settings.", removePrompt)
                     : null
             }
             {
                 errorResp ?
                     prompt("Error in Fetching Data for this city!", () => setErrorResp(false))
-                    :null
+                    : null
             }
         </div>
     )

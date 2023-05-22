@@ -19,12 +19,11 @@ const CurrentWeather = (props) => {
             backgroundColor: "rgba(255, 255, 255, .018)",
         }
     }
-
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     return (
         <div className='current-weather-section'>
             <div className='greetings-wrapper'>
                 <div className='greetings-name' >
-                    {/* <div className='home-greeting' style={{fontSize: "2rem", paddingLeft: ".7rem", color: "#485587"}}>Good Morning,</div>  */}
                     <div className='home-greeting' style={{fontSize: "2rem", paddingLeft: ".7rem", color: "#E94C89"}}>Good Morning,</div> 
                     <div className='home-greeting' style={{color: "#E94C89"}} onClick={() => console.log("sdvhfdbjv")}>Abhishek</div>
                     <div className='sub-greeting-text'>Have a nice day!</div>
@@ -36,7 +35,9 @@ const CurrentWeather = (props) => {
                         }
                     </div>
                     <div className='sub-greeting-text'>
-                        Wednesday, {
+                        {
+                            days[new Date(Date.now()).getDay()]
+                        }, {
                             new Date(Date.now()).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: "numeric" })
                         }
                     </div>

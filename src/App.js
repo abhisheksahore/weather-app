@@ -12,9 +12,7 @@ function App() {
     <Provider store={store}>
       <div>
         <HomeScreen />
-        {/* <Sun />
-        <Moon />
-        <Cloud /> */}
+        
       </div>
     </Provider>
   );
